@@ -52,6 +52,10 @@ function buildStyles(color: string, position: "right" | "left"): string {
       pointer-events: none;
     }
 
+    .ts-mobile-close {
+      display: none;
+    }
+
     .ts-panel {
       position: fixed;
       bottom: 88px;
@@ -83,6 +87,41 @@ function buildStyles(color: string, position: "right" | "left"): string {
     }
 
     @media (max-width: ${MOBILE_BREAKPOINT}px) {
+      :host(.ts-open) .ts-button {
+        display: none;
+      }
+
+      .ts-mobile-close {
+        display: flex;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 1;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        transition: background 0.15s ease;
+      }
+
+      .ts-mobile-close:hover {
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      .ts-mobile-close svg {
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
+      }
+
       .ts-panel {
         position: fixed;
         inset: 0;
@@ -97,6 +136,10 @@ function buildStyles(color: string, position: "right" | "left"): string {
       .ts-panel.ts-hidden {
         transform: translateY(100%);
         opacity: 0;
+      }
+
+      .ts-panel.ts-hidden .ts-mobile-close {
+        display: none;
       }
     }
   `;
@@ -218,6 +261,9 @@ export class TackSuiteChat extends SafeHTMLElement {
   }
 
   private _updateState() {
+    // Toggle host class for CSS selectors (:host(.ts-open))
+    this.classList.toggle("ts-open", this._isOpen);
+
     if (this._panel) {
       this._panel.classList.toggle("ts-hidden", !this._isOpen);
     }
@@ -258,6 +304,14 @@ export class TackSuiteChat extends SafeHTMLElement {
     // Panel
     this._panel = document.createElement("div");
     this._panel.className = `ts-panel${this._isOpen ? "" : " ts-hidden"}`;
+
+    // Floating close button (visible only on mobile via CSS)
+    const mobileClose = document.createElement("button");
+    mobileClose.className = "ts-mobile-close";
+    mobileClose.innerHTML = CLOSE_ICON.replace('width="24"', 'width="16"').replace('height="24"', 'height="16"');
+    mobileClose.setAttribute("aria-label", "Close chat");
+    mobileClose.addEventListener("click", () => this._close());
+    this._panel.appendChild(mobileClose);
 
     // Restore existing iframe if we had one
     if (existingIframe) {
