@@ -1,0 +1,39 @@
+{
+  "name": "@tacksuite/widget",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/tacksuite-widget.umd.js",
+  "module": "dist/tacksuite-widget.es.js",
+  "types": "dist/types/main.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/tacksuite-widget.es.js",
+      "require": "./dist/tacksuite-widget.umd.js",
+      "types": "./dist/types/main.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tacksuite/widget.git"
+  },
+  "description": "Embeddable chat widget for TackSuite",
+  "author": "TackSuite",
+  "trustedDependencies": [
+    "node-sass"
+  ],
+  "license": "MIT"
+}
