@@ -1,6 +1,6 @@
 {
   "name": "@tacksuite/widget",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "main": "dist/tacksuite-widget.umd.js",
   "module": "dist/tacksuite-widget.es.js",
@@ -19,7 +19,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "publish:public": "npm publish --access public"
   },
   "devDependencies": {
     "typescript": "^5.7.0",
