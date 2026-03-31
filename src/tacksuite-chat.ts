@@ -167,11 +167,6 @@ export class TackSuiteChat extends SafeHTMLElement {
     this._teardownListeners();
   }
 
-  private _handleResize = () => {
-    // Panel CSS handles mobile/desktop switch via media query.
-    // Nothing to do in JS — CSS handles it.
-  };
-
   private _handlePostMessage = (event: MessageEvent) => {
     const origin = new URL(this._config.baseUrl).origin;
     if (event.origin !== origin) return;
@@ -181,12 +176,10 @@ export class TackSuiteChat extends SafeHTMLElement {
   };
 
   private _setupListeners() {
-    window.addEventListener("resize", this._handleResize);
     window.addEventListener("message", this._handlePostMessage);
   }
 
   private _teardownListeners() {
-    window.removeEventListener("resize", this._handleResize);
     window.removeEventListener("message", this._handlePostMessage);
   }
 

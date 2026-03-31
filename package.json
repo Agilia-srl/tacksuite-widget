@@ -10,9 +10,9 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/types/main.d.ts",
       "import": "./dist/tacksuite-widget.es.js",
-      "require": "./dist/tacksuite-widget.umd.js",
-      "types": "./dist/types/main.d.ts"
+      "require": "./dist/tacksuite-widget.umd.js"
     }
   },
   "scripts": {
@@ -32,8 +32,5 @@
   },
   "description": "Embeddable chat widget for TackSuite",
   "author": "TackSuite",
-  "trustedDependencies": [
-    "node-sass"
-  ],
   "license": "MIT"
 }
