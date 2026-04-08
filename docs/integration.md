@@ -42,8 +42,8 @@ import "@tacksuite/widget";
 - The widget renders inside a **Shadow DOM** — its styles are fully isolated from the host page.
 - The **iframe is lazy-loaded** on first click and preserved across open/close toggles (chat state is not lost).
 - On **desktop**, clicking the button toggles a popup panel above the button.
-- On **mobile** (<=768px), the panel goes fullscreen. The FAB button hides and a small floating X appears at the top-right of the iframe to close it.
-- The widget listens for `postMessage` events from the iframe. If the chat page sends `{ type: "tacksuite-chat:close" }`, the widget closes the panel. The message origin is validated against `base-url`.
+- On **mobile** (<=768px), the panel goes fullscreen. The FAB button hides, and the embedded chat page is responsible for rendering its own close control inside the iframe.
+- The widget listens for `postMessage` events from the iframe. If the chat page sends a close message like `"close"` or `{ type: "close" }`, the widget closes the panel. The message origin is validated against `base-url`.
 
 ## TackSuite app-side integration (postMessage)
 
@@ -53,10 +53,7 @@ To allow the chat page to close the widget (e.g. a "back" button in the chat hea
 // In the TackSuite chat page
 if (window !== window.parent) {
   // We're inside the widget iframe
-  window.parent.postMessage(
-    { type: "tacksuite-chat:close" },
-    "*" // The widget validates the origin on its side
-  );
+  window.parent.postMessage("close", "*");
 }
 ```
 
