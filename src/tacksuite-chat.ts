@@ -1,3 +1,5 @@
+import type { WorkspacePublicConfig } from "./types";
+
 const DEFAULT_BASE_URL = "https://app.tacksuite.it";
 const DEFAULT_COLOR = "#517569";
 const MOBILE_BREAKPOINT = 768;
@@ -154,6 +156,9 @@ const SafeHTMLElement =
 export class TackSuiteChat extends SafeHTMLElement {
   private _isOpen = false;
   private _iframeLoaded = false;
+  private _workspaceConfig: WorkspacePublicConfig | null = null;
+  private _configRequestController: AbortController | null = null;
+  private _configRequestId = 0;
 
   private _button: HTMLButtonElement | null = null;
   private _panel: HTMLDivElement | null = null;
@@ -161,7 +166,7 @@ export class TackSuiteChat extends SafeHTMLElement {
   private _config = {
     workspace: "",
     baseUrl: DEFAULT_BASE_URL,
-    color: DEFAULT_COLOR,
+    customColor: null as string | null,
     icon: CHAT_ICON,
     position: "right" as "right" | "left",
   };
@@ -186,7 +191,7 @@ export class TackSuiteChat extends SafeHTMLElement {
         this._config.baseUrl = newValue || DEFAULT_BASE_URL;
         break;
       case "color":
-        this._config.color = newValue || DEFAULT_COLOR;
+        this._config.customColor = newValue || null;
         break;
       case "icon":
         this._config.icon = newValue || CHAT_ICON;
@@ -196,18 +201,29 @@ export class TackSuiteChat extends SafeHTMLElement {
         break;
     }
 
-    // Re-render if already connected (attribute changed after mount)
-    if (this.isConnected) {
+    if (!this.isConnected) {
+      return;
+    }
+
+    if (name === "workspace" || name === "base-url") {
+      this._resetWidget();
+      void this._loadWorkspaceConfig();
+      return;
+    }
+
+    if (this._canRenderWidget()) {
       this.render();
     }
   }
 
   connectedCallback() {
-    this.render();
     this._setupListeners();
+    void this._loadWorkspaceConfig();
   }
 
   disconnectedCallback() {
+    this._configRequestController?.abort();
+    this._configRequestController = null;
     this._teardownListeners();
   }
 
@@ -238,6 +254,10 @@ export class TackSuiteChat extends SafeHTMLElement {
   private _open() {
     if (!this._config.workspace) {
       console.warn("[tacksuite-chat] Missing required 'workspace' attribute.");
+      return;
+    }
+
+    if (!this._canRenderWidget()) {
       return;
     }
 
@@ -279,9 +299,105 @@ export class TackSuiteChat extends SafeHTMLElement {
     }
   }
 
+  private _canRenderWidget() {
+    return this._workspaceConfig?.active === true;
+  }
+
+  private _getLauncherColor() {
+    return (
+      this._config.customColor ??
+      this._workspaceConfig?.publicChat?.primaryColor ??
+      DEFAULT_COLOR
+    );
+  }
+
+  private _clearRender() {
+    this.classList.remove("ts-open");
+    this.shadowRoot?.replaceChildren();
+    this._button = null;
+    this._panel = null;
+  }
+
+  private _resetWidget() {
+    this._configRequestController?.abort();
+    this._configRequestController = null;
+    this._workspaceConfig = null;
+    this._isOpen = false;
+    this._iframeLoaded = false;
+    this._clearRender();
+  }
+
+  private async _loadWorkspaceConfig() {
+    if (!this._config.workspace) {
+      this._resetWidget();
+      console.warn("[tacksuite-chat] Missing required 'workspace' attribute.");
+      return;
+    }
+
+    this._resetWidget();
+
+    const requestId = ++this._configRequestId;
+    const controller = new AbortController();
+    this._configRequestController = controller;
+
+    try {
+      const response = await fetch(
+        new URL(
+          `/api/workspace/${this._config.workspace}/config`,
+          this._config.baseUrl
+        ).toString(),
+        {
+          signal: controller.signal,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Config request failed with status ${response.status}`);
+      }
+
+      const payload = (await response.json()) as WorkspacePublicConfig;
+
+      if (
+        requestId !== this._configRequestId ||
+        !this.isConnected ||
+        this._configRequestController !== controller
+      ) {
+        return;
+      }
+
+      this._workspaceConfig = payload;
+
+      if (!this._canRenderWidget()) {
+        this._clearRender();
+        return;
+      }
+
+      this.render();
+    } catch (error) {
+      if ((error as DOMException).name === "AbortError") {
+        return;
+      }
+
+      if (
+        requestId === this._configRequestId &&
+        this._configRequestController === controller
+      ) {
+        this._workspaceConfig = null;
+        this._clearRender();
+      }
+    } finally {
+      if (this._configRequestController === controller) {
+        this._configRequestController = null;
+      }
+    }
+  }
+
   private render() {
     const shadow = this.shadowRoot;
-    if (!shadow) return;
+    if (!shadow || !this._canRenderWidget()) {
+      this._clearRender();
+      return;
+    }
 
     // Preserve iframe if already loaded
     const existingIframe = shadow.querySelector("iframe");
@@ -289,7 +405,10 @@ export class TackSuiteChat extends SafeHTMLElement {
     shadow.innerHTML = "";
 
     const style = document.createElement("style");
-    style.textContent = buildStyles(this._config.color, this._config.position);
+    style.textContent = buildStyles(
+      this._getLauncherColor(),
+      this._config.position
+    );
     shadow.appendChild(style);
 
     // Button

@@ -15,6 +15,19 @@ export interface TackSuiteChatAttributes {
   position?: "right" | "left";
 }
 
+export interface WorkspacePublicChatConfig {
+  title: string;
+  subtitle: string;
+  welcomeMessages: string[];
+  primaryColor: string;
+  secondaryColor: string;
+}
+
+export interface WorkspacePublicConfig {
+  active: boolean;
+  publicChat?: WorkspacePublicChatConfig | null;
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     "tacksuite-chat": HTMLElement & TackSuiteChatAttributes;
