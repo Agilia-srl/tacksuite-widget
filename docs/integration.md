@@ -2,7 +2,7 @@
 
 ## What it does
 
-`@tacksuite/widget` is a Web Component that adds a floating chat button to any website. Clicking it opens the TackSuite public chat page (`/chat/{workspace-slug}`) in an iframe overlay. Desktop shows a 400x600 popup; mobile (<768px) goes fullscreen.
+`@tacksuite/widget` is a Web Component that adds a floating chat button to any website. Clicking it opens the TackSuite public chat page (`/chat/{workspace-slug}`) in an iframe overlay. Desktop shows a 400x680 popup; mobile (<768px) goes fullscreen.
 
 ## Installation
 

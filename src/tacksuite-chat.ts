@@ -1,6 +1,7 @@
 const DEFAULT_BASE_URL = "https://app.tacksuite.it";
 const DEFAULT_COLOR = "#517569";
 const MOBILE_BREAKPOINT = 768;
+const DESKTOP_PANEL_HEIGHT = 680;
 
 const CHAT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
 
@@ -62,7 +63,7 @@ function buildStyles(color: string, position: "right" | "left"): string {
       ${side}: 20px;
       ${oppositeSide}: auto;
       width: 400px;
-      height: min(600px, calc(100dvh - 108px));
+      height: min(${DESKTOP_PANEL_HEIGHT}px, calc(100dvh - 108px));
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
