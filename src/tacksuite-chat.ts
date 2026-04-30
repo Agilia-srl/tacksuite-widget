@@ -122,6 +122,26 @@ const SafeHTMLElement =
     ? window.HTMLElement
     : (class {} as typeof HTMLElement);
 
+const HOST_STYLE_ID = "tacksuite-chat-host-styles";
+
+function injectHostStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(HOST_STYLE_ID)) return;
+
+  const style = document.createElement("style");
+  style.id = HOST_STYLE_ID;
+  style.textContent = `
+    @media (max-width: ${MOBILE_BREAKPOINT}px) {
+      html:has(tacksuite-chat.ts-open),
+      body:has(tacksuite-chat.ts-open) {
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+    }
+  `;
+  (document.head || document.documentElement).appendChild(style);
+}
+
 export class TackSuiteChat extends SafeHTMLElement {
   private _isOpen = false;
   private _iframeLoaded = false;
@@ -187,6 +207,7 @@ export class TackSuiteChat extends SafeHTMLElement {
   }
 
   connectedCallback() {
+    injectHostStyles();
     this._setupListeners();
     void this._loadWorkspaceConfig();
   }
