@@ -21,6 +21,8 @@ export interface WorkspacePublicChatConfig {
   welcomeMessages: string[];
   primaryColor: string;
   secondaryColor: string;
+  buttonPosition: "right" | "left";
+  buttonSize: number;
 }
 
 export interface WorkspacePublicConfig {

@@ -32,13 +32,14 @@ import "@tacksuite/widget";
 | `base-url` | no | `https://app.tacksuite.it` | TackSuite instance URL |
 | `color` | no | workspace `publicChat.primaryColor` fallback `#517569` | Button background color override (any CSS color) |
 | `icon` | no | built-in chat SVG | Custom SVG string for the button icon |
-| `position` | no | `right` | `right` or `left` corner placement |
+| `position` | no | workspace `publicChat.buttonPosition` fallback `right` | `right` or `left` corner placement override |
 
 ## How it works
 
 - On mount, the widget calls `GET /api/workspace/{slug}/config` on the configured `base-url`.
 - If the config request fails or returns `active: false`, the widget renders nothing.
 - If the workspace is active, the widget uses `publicChat.primaryColor` for the launcher button unless a `color` attribute overrides it.
+- The launcher position falls back to `publicChat.buttonPosition` when the `position` attribute is not set, and the launcher size is taken from `publicChat.buttonSize` (defaults to `56`).
 - The widget renders inside a **Shadow DOM** — its styles are fully isolated from the host page.
 - The **iframe is lazy-loaded** on first click and preserved across open/close toggles (chat state is not lost).
 - On **desktop**, clicking the button toggles a popup panel above the button.

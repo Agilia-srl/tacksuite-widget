@@ -2,6 +2,8 @@ import type { WorkspacePublicConfig } from "./types";
 
 const DEFAULT_BASE_URL = "https://app.tacksuite.it";
 const DEFAULT_COLOR = "#517569";
+const DEFAULT_POSITION: "right" | "left" = "right";
+const DEFAULT_BUTTON_SIZE = 64;
 const MOBILE_BREAKPOINT = 768;
 const DESKTOP_PANEL_HEIGHT = 680;
 
@@ -9,10 +11,16 @@ const CHAT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24
 
 const CLOSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>`;
 
-function buildStyles(color: string, position: "right" | "left"): string {
+function buildStyles(
+  color: string,
+  position: "right" | "left",
+  buttonSize: number,
+): string {
   const side = position;
   const oppositeSide = position === "right" ? "left" : "right";
   const panelOrigin = position === "right" ? "bottom right" : "bottom left";
+  const iconSize = Math.round(buttonSize * (24 / 56));
+  const panelOffset = buttonSize + 32;
 
   return `
     :host {
@@ -24,8 +32,8 @@ function buildStyles(color: string, position: "right" | "left"): string {
     }
 
     .ts-button {
-      width: 56px;
-      height: 56px;
+      width: ${buttonSize}px;
+      height: ${buttonSize}px;
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -50,18 +58,18 @@ function buildStyles(color: string, position: "right" | "left"): string {
     }
 
     .ts-button svg {
-      width: 24px;
-      height: 24px;
+      width: ${iconSize}px;
+      height: ${iconSize}px;
       pointer-events: none;
     }
 
     .ts-panel {
       position: fixed;
-      bottom: 88px;
+      bottom: ${panelOffset}px;
       ${side}: 20px;
       ${oppositeSide}: auto;
       width: 400px;
-      height: min(${DESKTOP_PANEL_HEIGHT}px, calc(100dvh - 108px));
+      height: min(${DESKTOP_PANEL_HEIGHT}px, calc(100dvh - ${panelOffset + 20}px));
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
@@ -129,7 +137,7 @@ export class TackSuiteChat extends SafeHTMLElement {
     baseUrl: DEFAULT_BASE_URL,
     customColor: null as string | null,
     icon: CHAT_ICON,
-    position: "right" as "right" | "left",
+    customPosition: null as "right" | "left" | null,
   };
 
   constructor() {
@@ -158,7 +166,8 @@ export class TackSuiteChat extends SafeHTMLElement {
         this._config.icon = newValue || CHAT_ICON;
         break;
       case "position":
-        this._config.position = newValue === "left" ? "left" : "right";
+        this._config.customPosition =
+          newValue === "left" || newValue === "right" ? newValue : null;
         break;
     }
 
@@ -275,12 +284,10 @@ export class TackSuiteChat extends SafeHTMLElement {
       this._panel.classList.toggle("ts-hidden", !this._isOpen);
     }
     if (this._button) {
-      this._button.innerHTML = this._isOpen
-        ? CLOSE_ICON
-        : this._config.icon;
+      this._button.innerHTML = this._isOpen ? CLOSE_ICON : this._config.icon;
       this._button.setAttribute(
         "aria-label",
-        this._isOpen ? "Close chat" : "Open chat"
+        this._isOpen ? "Close chat" : "Open chat",
       );
     }
   }
@@ -295,6 +302,21 @@ export class TackSuiteChat extends SafeHTMLElement {
       this._workspaceConfig?.publicChat?.primaryColor ??
       DEFAULT_COLOR
     );
+  }
+
+  private _getPosition(): "right" | "left" {
+    return (
+      this._config.customPosition ??
+      this._workspaceConfig?.publicChat?.buttonPosition ??
+      DEFAULT_POSITION
+    );
+  }
+
+  private _getButtonSize(): number {
+    const configured = this._workspaceConfig?.publicChat?.buttonSize;
+    return typeof configured === "number" && configured > 0
+      ? configured
+      : DEFAULT_BUTTON_SIZE;
   }
 
   private _clearRender() {
@@ -330,11 +352,11 @@ export class TackSuiteChat extends SafeHTMLElement {
       const response = await fetch(
         new URL(
           `/api/workspace/${this._config.workspace}/config`,
-          this._config.baseUrl
+          this._config.baseUrl,
         ).toString(),
         {
           signal: controller.signal,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -393,7 +415,8 @@ export class TackSuiteChat extends SafeHTMLElement {
     const style = document.createElement("style");
     style.textContent = buildStyles(
       this._getLauncherColor(),
-      this._config.position
+      this._getPosition(),
+      this._getButtonSize(),
     );
     shadow.appendChild(style);
 
@@ -403,7 +426,7 @@ export class TackSuiteChat extends SafeHTMLElement {
     this._button.innerHTML = this._isOpen ? CLOSE_ICON : this._config.icon;
     this._button.setAttribute(
       "aria-label",
-      this._isOpen ? "Close chat" : "Open chat"
+      this._isOpen ? "Close chat" : "Open chat",
     );
     this._button.addEventListener("click", () => this._toggle());
 
