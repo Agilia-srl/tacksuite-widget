@@ -2,10 +2,31 @@ import type { WorkspacePublicConfig } from "./types";
 
 const DEFAULT_BASE_URL = "https://app.tacksuite.it";
 const DEFAULT_COLOR = "#517569";
+const DEFAULT_SECONDARY_COLOR = "#f3f4f6";
 const DEFAULT_POSITION: "right" | "left" = "right";
 const DEFAULT_BUTTON_SIZE = 64;
 const MOBILE_BREAKPOINT = 768;
 const DESKTOP_PANEL_HEIGHT = 680;
+const BUBBLE_REVEAL_DELAY_MS = 500;
+const BUBBLE_TYPING_DURATION_MS = 1200;
+
+function getReadableForeground(bg: string): string {
+  const hex = bg.replace("#", "").trim();
+  if (hex.length !== 3 && hex.length !== 6) return "#111827";
+  const expanded =
+    hex.length === 3
+      ? hex
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : hex;
+  const r = parseInt(expanded.slice(0, 2), 16);
+  const g = parseInt(expanded.slice(2, 4), 16);
+  const b = parseInt(expanded.slice(4, 6), 16);
+  if ([r, g, b].some((v) => Number.isNaN(v))) return "#111827";
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? "#111827" : "#ffffff";
+}
 
 const CHAT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
 
@@ -15,12 +36,16 @@ function buildStyles(
   color: string,
   position: "right" | "left",
   buttonSize: number,
+  bubbleBackground: string,
+  bubbleForeground: string,
 ): string {
   const side = position;
   const oppositeSide = position === "right" ? "left" : "right";
   const panelOrigin = position === "right" ? "bottom right" : "bottom left";
   const iconSize = Math.round(buttonSize * (24 / 56));
   const panelOffset = buttonSize + 32;
+  const bubbleOffset = buttonSize + 30;
+  const tailSideOffset = Math.max(8, Math.round(buttonSize / 2 - 6));
 
   return `
     :host {
@@ -93,8 +118,133 @@ function buildStyles(
       background: white;
     }
 
+    .ts-bubble {
+      position: fixed;
+      bottom: ${bubbleOffset}px;
+      ${side}: 20px;
+      ${oppositeSide}: auto;
+      max-width: min(260px, calc(100vw - 80px));
+      background: ${bubbleBackground};
+      color: ${bubbleForeground};
+      padding: 10px 14px;
+      padding-${oppositeSide}: 32px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+      cursor: pointer;
+      word-wrap: break-word;
+    }
+
+    .ts-bubble.ts-visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .ts-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      ${side}: ${tailSideOffset}px;
+      width: 12px;
+      height: 12px;
+      background: ${bubbleBackground};
+      border-radius: 2px;
+      transform: rotate(45deg);
+    }
+
+    .ts-bubble-text {
+      display: block;
+    }
+
+    .ts-bubble.ts-typing {
+      padding: 10px 16px;
+      text-align: center;
+    }
+
+    .ts-bubble.ts-typing .ts-bubble-text,
+    .ts-bubble.ts-typing .ts-bubble-close {
+      display: none;
+    }
+
+    .ts-bubble-typing {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 2px 0;
+    }
+
+    .ts-bubble.ts-typing .ts-bubble-typing {
+      display: inline-flex;
+    }
+
+    .ts-bubble-typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.4;
+      animation: ts-bubble-typing-bounce 1.2s infinite ease-in-out;
+    }
+
+    .ts-bubble-typing-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .ts-bubble-typing-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes ts-bubble-typing-bounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.35;
+      }
+      40% {
+        transform: translateY(-3px);
+        opacity: 1;
+      }
+    }
+
+    .ts-bubble-close {
+      position: absolute;
+      top: 6px;
+      ${oppositeSide}: 6px;
+      width: 20px;
+      height: 20px;
+      border: none;
+      background: transparent;
+      color: ${bubbleForeground};
+      opacity: 0.7;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      line-height: 1;
+      border-radius: 50%;
+      transition: opacity 0.15s ease, background-color 0.15s ease;
+    }
+
+    .ts-bubble-close:hover {
+      opacity: 1;
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+
     @media (max-width: ${MOBILE_BREAKPOINT}px) {
       :host(.ts-open) .ts-button {
+        display: none;
+      }
+
+      :host(.ts-open) .ts-bubble {
         display: none;
       }
 
@@ -151,6 +301,10 @@ export class TackSuiteChat extends SafeHTMLElement {
 
   private _button: HTMLButtonElement | null = null;
   private _panel: HTMLDivElement | null = null;
+  private _bubble: HTMLDivElement | null = null;
+  private _bubbleRevealTimer: number | null = null;
+  private _bubbleTypingTimer: number | null = null;
+  private _bubbleDismissedForSession = false;
 
   private _config = {
     workspace: "",
@@ -215,6 +369,7 @@ export class TackSuiteChat extends SafeHTMLElement {
   disconnectedCallback() {
     this._configRequestController?.abort();
     this._configRequestController = null;
+    this._clearBubbleRevealTimer();
     this._teardownListeners();
   }
 
@@ -278,6 +433,7 @@ export class TackSuiteChat extends SafeHTMLElement {
     }
 
     this._isOpen = true;
+    this._dismissBubble(true);
 
     // Lazy-load iframe on first open
     if (!this._iframeLoaded && this._panel) {
@@ -340,11 +496,88 @@ export class TackSuiteChat extends SafeHTMLElement {
       : DEFAULT_BUTTON_SIZE;
   }
 
+  private _getBubbleMessage(): string {
+    const raw = this._workspaceConfig?.publicChat?.bubbleMessage;
+    return typeof raw === "string" ? raw.trim() : "";
+  }
+
+  private _getBubbleBackground(): string {
+    return (
+      this._workspaceConfig?.publicChat?.secondaryColor ??
+      DEFAULT_SECONDARY_COLOR
+    );
+  }
+
+  private _bubbleStorageKey(): string {
+    return `tacksuite-chat:bubble-dismissed:${this._config.workspace}`;
+  }
+
+  private _readBubbleDismissedFromStorage(): boolean {
+    try {
+      return (
+        window.sessionStorage?.getItem(this._bubbleStorageKey()) === "1"
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  private _persistBubbleDismissed() {
+    try {
+      window.sessionStorage?.setItem(this._bubbleStorageKey(), "1");
+    } catch {
+      // ignore (private mode, disabled storage)
+    }
+  }
+
+  private _scheduleBubbleReveal() {
+    if (this._bubbleRevealTimer != null) return;
+    if (this._bubbleDismissedForSession || this._isOpen) return;
+    if (!this._getBubbleMessage()) return;
+    if (!this._bubble) return;
+
+    this._bubbleRevealTimer = window.setTimeout(() => {
+      this._bubbleRevealTimer = null;
+      if (this._bubbleDismissedForSession || this._isOpen) return;
+      if (!this._bubble) return;
+      this._bubble.classList.add("ts-visible");
+
+      this._bubbleTypingTimer = window.setTimeout(() => {
+        this._bubbleTypingTimer = null;
+        if (!this._bubble) return;
+        this._bubble.classList.remove("ts-typing");
+      }, BUBBLE_TYPING_DURATION_MS);
+    }, BUBBLE_REVEAL_DELAY_MS);
+  }
+
+  private _clearBubbleRevealTimer() {
+    if (this._bubbleRevealTimer != null) {
+      window.clearTimeout(this._bubbleRevealTimer);
+      this._bubbleRevealTimer = null;
+    }
+    if (this._bubbleTypingTimer != null) {
+      window.clearTimeout(this._bubbleTypingTimer);
+      this._bubbleTypingTimer = null;
+    }
+  }
+
+  private _dismissBubble(persist: boolean) {
+    this._clearBubbleRevealTimer();
+    this._bubbleDismissedForSession = true;
+    if (this._bubble) {
+      this._bubble.classList.remove("ts-visible");
+    }
+    if (persist) {
+      this._persistBubbleDismissed();
+    }
+  }
+
   private _clearRender() {
     this.classList.remove("ts-open");
     this.shadowRoot?.replaceChildren();
     this._button = null;
     this._panel = null;
+    this._bubble = null;
   }
 
   private _resetWidget() {
@@ -353,6 +586,8 @@ export class TackSuiteChat extends SafeHTMLElement {
     this._workspaceConfig = null;
     this._isOpen = false;
     this._iframeLoaded = false;
+    this._clearBubbleRevealTimer();
+    this._bubbleDismissedForSession = false;
     this._clearRender();
   }
 
@@ -395,6 +630,7 @@ export class TackSuiteChat extends SafeHTMLElement {
       }
 
       this._workspaceConfig = payload;
+      this._bubbleDismissedForSession = this._readBubbleDismissedFromStorage();
 
       if (!this._canRenderWidget()) {
         this._clearRender();
@@ -431,13 +667,20 @@ export class TackSuiteChat extends SafeHTMLElement {
     // Preserve iframe if already loaded
     const existingIframe = shadow.querySelector("iframe");
 
+    this._clearBubbleRevealTimer();
     shadow.innerHTML = "";
+    this._bubble = null;
+
+    const bubbleBackground = this._getBubbleBackground();
+    const bubbleForeground = getReadableForeground(bubbleBackground);
 
     const style = document.createElement("style");
     style.textContent = buildStyles(
       this._getLauncherColor(),
       this._getPosition(),
       this._getButtonSize(),
+      bubbleBackground,
+      bubbleForeground,
     );
     shadow.appendChild(style);
 
@@ -460,7 +703,57 @@ export class TackSuiteChat extends SafeHTMLElement {
       this._panel.appendChild(existingIframe);
     }
 
+    // Bubble
+    const bubbleMessage = this._getBubbleMessage();
+    if (bubbleMessage) {
+      this._bubble = document.createElement("div");
+      this._bubble.className = "ts-bubble ts-typing";
+      this._bubble.setAttribute("role", "button");
+      this._bubble.setAttribute("tabindex", "0");
+      this._bubble.setAttribute("aria-label", bubbleMessage);
+
+      const typing = document.createElement("span");
+      typing.className = "ts-bubble-typing";
+      typing.setAttribute("aria-hidden", "true");
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement("span");
+        dot.className = "ts-bubble-typing-dot";
+        typing.appendChild(dot);
+      }
+      this._bubble.appendChild(typing);
+
+      const text = document.createElement("span");
+      text.className = "ts-bubble-text";
+      text.textContent = bubbleMessage;
+      this._bubble.appendChild(text);
+
+      const close = document.createElement("button");
+      close.className = "ts-bubble-close";
+      close.type = "button";
+      close.setAttribute("aria-label", "Dismiss");
+      close.textContent = "×";
+      close.addEventListener("click", (event) => {
+        event.stopPropagation();
+        this._dismissBubble(true);
+      });
+      this._bubble.appendChild(close);
+
+      this._bubble.addEventListener("click", () => {
+        this._open();
+      });
+      this._bubble.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          this._open();
+        }
+      });
+    }
+
     shadow.appendChild(this._panel);
     shadow.appendChild(this._button);
+    if (this._bubble) {
+      shadow.appendChild(this._bubble);
+      this._scheduleBubbleReveal();
+    }
   }
 }

@@ -23,6 +23,7 @@ export interface WorkspacePublicChatConfig {
   secondaryColor: string;
   buttonPosition: "right" | "left";
   buttonSize: number;
+  bubbleMessage?: string;
 }
 
 export interface WorkspacePublicConfig {
