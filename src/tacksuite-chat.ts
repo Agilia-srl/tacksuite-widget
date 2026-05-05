@@ -127,7 +127,7 @@ function buildStyles(
       background: ${bubbleBackground};
       color: ${bubbleForeground};
       padding: 10px 14px;
-      padding-${oppositeSide}: 32px;
+      padding-right: 32px;
       border-radius: 16px;
       font-size: 14px;
       line-height: 1.35;
@@ -216,7 +216,7 @@ function buildStyles(
     .ts-bubble-close {
       position: absolute;
       top: 6px;
-      ${oppositeSide}: 6px;
+      right: 6px;
       width: 20px;
       height: 20px;
       border: none;
