@@ -15,15 +15,23 @@ export interface TackSuiteChatAttributes {
   position?: "right" | "left";
 }
 
+export type WorkspaceWidgetMode = "chat" | "whatsapp";
+
 export interface WorkspacePublicChatConfig {
-  title: string;
-  subtitle: string;
-  welcomeMessages: string[];
-  primaryColor: string;
-  secondaryColor: string;
-  buttonPosition: "right" | "left";
-  buttonSize: number;
+  title?: string;
+  subtitle?: string;
+  welcomeMessages?: string[];
+  primaryColor?: string;
+  secondaryColor?: string;
+  buttonPosition?: "right" | "left";
+  buttonSize?: number;
   bubbleMessage?: string;
+  /** Widget behaviour — "chat" (default) opens the chat iframe, "whatsapp" links to WhatsApp */
+  mode?: WorkspaceWidgetMode;
+  /** WhatsApp mode: CTA label shown on the launcher bubble */
+  whatsappTitle?: string;
+  /** WhatsApp mode: destination phone number (may contain spaces / "+") */
+  phoneNumber?: string;
 }
 
 export interface WorkspacePublicConfig {

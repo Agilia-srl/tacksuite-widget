@@ -1,0 +1,10 @@
+export const DEFAULT_BASE_URL = "https://app.tacksuite.it";
+export const DEFAULT_COLOR = "#517569";
+export const WHATSAPP_COLOR = "#25D366";
+export const DEFAULT_SECONDARY_COLOR = "#f3f4f6";
+export const DEFAULT_POSITION: "right" | "left" = "right";
+export const DEFAULT_BUTTON_SIZE = 64;
+export const MOBILE_BREAKPOINT = 768;
+export const DESKTOP_PANEL_HEIGHT = 680;
+export const BUBBLE_REVEAL_DELAY_MS = 500;
+export const BUBBLE_TYPING_DURATION_MS = 1200;
