@@ -32,6 +32,8 @@ export interface WorkspacePublicChatConfig {
   whatsappTitle?: string;
   /** WhatsApp mode: destination phone number (may contain spaces / "+") */
   phoneNumber?: string;
+  /** WhatsApp mode: prefilled message inserted when the customer opens WhatsApp */
+  whatsappDefaultMessage?: string;
 }
 
 export interface WorkspacePublicConfig {

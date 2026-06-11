@@ -237,7 +237,9 @@ export class TackSuiteChat extends SafeHTMLElement {
     if (typeof raw !== "string") return null;
     const digits = raw.replace(/[^\d]/g, "");
     if (!digits) return null;
-    return `https://wa.me/${digits}`;
+    const message = this._workspaceConfig?.publicChat?.whatsappDefaultMessage;
+    const query = message ? `?text=${encodeURIComponent(message)}` : "";
+    return `https://wa.me/${digits}${query}`;
   }
 
   private _getLauncherColor() {
