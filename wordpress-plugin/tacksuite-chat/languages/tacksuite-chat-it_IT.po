@@ -1,0 +1,67 @@
+# TackSuite Chat — Italian translation.
+# Copyright (C) 2026 TackSuite
+# This file is distributed under the MIT license.
+msgid ""
+msgstr ""
+"Project-Id-Version: TackSuite Chat 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/tacksuite-chat\n"
+"Last-Translator: TackSuite\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: tacksuite-chat\n"
+
+#. Description of the plugin
+msgid "Add the TackSuite floating chat widget to your site. Configure your workspace and appearance from Settings → TackSuite Chat."
+msgstr "Aggiungi il widget di chat fluttuante di TackSuite al tuo sito. Configura il workspace e l'aspetto da Impostazioni → TackSuite Chat."
+
+msgid "Settings"
+msgstr "Impostazioni"
+
+msgid "Add the TackSuite floating chat widget to your site. Enter your workspace slug below — everything else is optional."
+msgstr "Aggiungi il widget di chat fluttuante di TackSuite al tuo sito. Inserisci lo slug del workspace qui sotto — tutto il resto è facoltativo."
+
+msgid "Enabled"
+msgstr "Attivo"
+
+msgid "Show the chat widget on your site"
+msgstr "Mostra il widget di chat sul sito"
+
+msgid "Workspace slug"
+msgstr "Slug del workspace"
+
+msgid "The workspace identifier from your embed code (the workspace attribute on <tacksuite-chat>)."
+msgstr "L'identificativo del workspace dal tuo codice di embed (l'attributo workspace su <tacksuite-chat>)."
+
+msgid "Advanced settings"
+msgstr "Impostazioni avanzate"
+
+msgid "Optional. Defaults come from the workspace configuration."
+msgstr "Opzionali. I valori predefiniti provengono dalla configurazione del workspace."
+
+msgid "Position"
+msgstr "Posizione"
+
+msgid "Default (from workspace)"
+msgstr "Predefinita (dal workspace)"
+
+msgid "Bottom right"
+msgstr "In basso a destra"
+
+msgid "Bottom left"
+msgstr "In basso a sinistra"
+
+msgid "Button color"
+msgstr "Colore del pulsante"
+
+msgid "Optional. Any CSS color overrides the workspace default."
+msgstr "Facoltativo. Qualsiasi colore CSS sostituisce quello predefinito del workspace."
+
+msgid "Base URL"
+msgstr "URL di base"
+
+msgid "Optional. Only change this for self-hosted TackSuite instances."
+msgstr "Facoltativo. Modificalo solo per istanze TackSuite self-hosted."
