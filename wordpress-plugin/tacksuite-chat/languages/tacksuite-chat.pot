@@ -1,0 +1,107 @@
+# Copyright (C) 2026 TackSuite
+# This file is distributed under the MIT.
+msgid ""
+msgstr ""
+"Project-Id-Version: TackSuite Chat 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/tacksuite-chat\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-16T11:02:48+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: tacksuite-chat\n"
+
+#. Plugin Name of the plugin
+#: tacksuite-chat.php
+#: tacksuite-chat.php:137
+#: tacksuite-chat.php:138
+#: tacksuite-chat.php:220
+msgid "TackSuite Chat"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: tacksuite-chat.php
+msgid "https://github.com/tacksuite/widget"
+msgstr ""
+
+#. Description of the plugin
+#: tacksuite-chat.php
+msgid "Add the TackSuite floating chat widget to your site. Configure your workspace and appearance from Settings → TackSuite Chat."
+msgstr ""
+
+#. Author of the plugin
+#: tacksuite-chat.php
+msgid "TackSuite"
+msgstr ""
+
+#. Author URI of the plugin
+#: tacksuite-chat.php
+msgid "https://tacksuite.it"
+msgstr ""
+
+#: tacksuite-chat.php:156
+msgid "Settings"
+msgstr ""
+
+#: tacksuite-chat.php:221
+msgid "Add the TackSuite floating chat widget to your site. Enter your workspace slug below — everything else is optional."
+msgstr ""
+
+#: tacksuite-chat.php:229
+msgid "Enabled"
+msgstr ""
+
+#: tacksuite-chat.php:233
+msgid "Show the chat widget on your site"
+msgstr ""
+
+#: tacksuite-chat.php:240
+msgid "Workspace slug"
+msgstr ""
+
+#: tacksuite-chat.php:244
+msgid "The workspace identifier from your embed code (the workspace attribute on <tacksuite-chat>)."
+msgstr ""
+
+#: tacksuite-chat.php:251
+msgid "Advanced settings"
+msgstr ""
+
+#: tacksuite-chat.php:252
+msgid "Optional. Defaults come from the workspace configuration."
+msgstr ""
+
+#: tacksuite-chat.php:257
+msgid "Position"
+msgstr ""
+
+#: tacksuite-chat.php:261
+msgid "Default (from workspace)"
+msgstr ""
+
+#: tacksuite-chat.php:262
+msgid "Bottom right"
+msgstr ""
+
+#: tacksuite-chat.php:263
+msgid "Bottom left"
+msgstr ""
+
+#: tacksuite-chat.php:270
+msgid "Button color"
+msgstr ""
+
+#: tacksuite-chat.php:274
+msgid "Optional. Any CSS color overrides the workspace default."
+msgstr ""
+
+#: tacksuite-chat.php:280
+msgid "Base URL"
+msgstr ""
+
+#: tacksuite-chat.php:284
+msgid "Optional. Only change this for self-hosted TackSuite instances."
+msgstr ""
