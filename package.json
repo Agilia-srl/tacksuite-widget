@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tacksuite/widget.git"
+    "url": "git+https://github.com/Agilia-srl/tacksuite-widget.git"
   },
   "description": "Embeddable chat widget for TackSuite",
   "author": "TackSuite",

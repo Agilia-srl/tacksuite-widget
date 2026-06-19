@@ -24,7 +24,7 @@ msgstr ""
 
 #. Plugin URI of the plugin
 #: tacksuite-chat.php
-msgid "https://github.com/tacksuite/widget"
+msgid "https://github.com/Agilia-srl/tacksuite-widget"
 msgstr ""
 
 #. Description of the plugin

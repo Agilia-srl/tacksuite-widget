@@ -77,9 +77,8 @@ configuration request fails.
 = Where is the source code of the bundled widget? =
 
 The widget script in `assets/tacksuite-widget.umd.js` is a compiled build of the
-open-source `@tacksuite/widget` project. The human-readable source code and the
-build instructions are available at https://github.com/tacksuite/widget and on
-npm as `@tacksuite/widget`.
+TackSuite widget. The human-readable source code and the build instructions are
+available at https://github.com/Agilia-srl/tacksuite-widget.
 
 == Changelog ==
 

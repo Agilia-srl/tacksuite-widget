@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       TackSuite Chat
- * Plugin URI:        https://github.com/tacksuite/widget
+ * Plugin URI:        https://github.com/Agilia-srl/tacksuite-widget
  * Description:       Add the TackSuite floating chat widget to your site. Configure your workspace and appearance from Settings → TackSuite Chat.
  * Version:           1.0.0
  * Requires at least: 5.0
