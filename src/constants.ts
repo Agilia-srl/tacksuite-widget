@@ -4,6 +4,7 @@ export const WHATSAPP_COLOR = "#25D366";
 export const DEFAULT_SECONDARY_COLOR = "#f3f4f6";
 export const DEFAULT_POSITION: "right" | "left" = "right";
 export const DEFAULT_BUTTON_SIZE = 64;
+export const DEFAULT_BOTTOM_OFFSET = 20;
 export const MOBILE_BREAKPOINT = 768;
 export const DESKTOP_PANEL_HEIGHT = 680;
 export const BUBBLE_REVEAL_DELAY_MS = 500;

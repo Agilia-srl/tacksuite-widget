@@ -3,6 +3,7 @@ import {
   BUBBLE_REVEAL_DELAY_MS,
   BUBBLE_TYPING_DURATION_MS,
   DEFAULT_BASE_URL,
+  DEFAULT_BOTTOM_OFFSET,
   DEFAULT_BUTTON_SIZE,
   DEFAULT_COLOR,
   DEFAULT_POSITION,
@@ -12,6 +13,14 @@ import {
 import { getReadableForeground } from "./color";
 import { CHAT_ICON, CLOSE_ICON, WHATSAPP_ICON } from "./icons";
 import { buildStyles, injectHostStyles } from "./styles";
+
+/** Accepts a plain number or a "24px" string; negatives and junk yield null. */
+function parseOffset(value: unknown): number | null {
+  const parsed =
+    typeof value === "number" ? value : parseFloat(String(value ?? "").trim());
+  if (!Number.isFinite(parsed) || parsed < 0) return null;
+  return parsed;
+}
 
 const SafeHTMLElement =
   typeof window !== "undefined"
@@ -38,6 +47,7 @@ export class TackSuiteChat extends SafeHTMLElement {
     customColor: null as string | null,
     customIcon: null as string | null,
     customPosition: null as "right" | "left" | null,
+    customBottomOffset: null as number | null,
   };
 
   constructor() {
@@ -46,7 +56,14 @@ export class TackSuiteChat extends SafeHTMLElement {
   }
 
   static get observedAttributes() {
-    return ["workspace", "base-url", "color", "icon", "position"];
+    return [
+      "workspace",
+      "base-url",
+      "color",
+      "icon",
+      "position",
+      "bottom-offset",
+    ];
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -68,6 +85,9 @@ export class TackSuiteChat extends SafeHTMLElement {
       case "position":
         this._config.customPosition =
           newValue === "left" || newValue === "right" ? newValue : null;
+        break;
+      case "bottom-offset":
+        this._config.customBottomOffset = parseOffset(newValue);
         break;
     }
 
@@ -255,6 +275,14 @@ export class TackSuiteChat extends SafeHTMLElement {
       this._config.customPosition ??
       this._workspaceConfig?.publicChat?.buttonPosition ??
       DEFAULT_POSITION
+    );
+  }
+
+  private _getBottomOffset(): number {
+    return (
+      this._config.customBottomOffset ??
+      parseOffset(this._workspaceConfig?.publicChat?.buttonBottomOffset) ??
+      DEFAULT_BOTTOM_OFFSET
     );
   }
 
@@ -450,13 +478,14 @@ export class TackSuiteChat extends SafeHTMLElement {
     const bubbleForeground = getReadableForeground(bubbleBackground);
 
     const style = document.createElement("style");
-    style.textContent = buildStyles(
-      this._getLauncherColor(),
-      this._getPosition(),
-      this._getButtonSize(),
+    style.textContent = buildStyles({
+      color: this._getLauncherColor(),
+      position: this._getPosition(),
+      buttonSize: this._getButtonSize(),
+      bottomOffset: this._getBottomOffset(),
       bubbleBackground,
       bubbleForeground,
-    );
+    });
     shadow.appendChild(style);
 
     const isWhatsapp = this._isWhatsapp();

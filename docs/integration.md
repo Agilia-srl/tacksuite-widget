@@ -33,6 +33,7 @@ import "@tacksuite/widget";
 | `color` | no | workspace `publicChat.primaryColor` fallback `#517569` | Button background color override (any CSS color) |
 | `icon` | no | built-in chat SVG | Custom SVG string for the button icon |
 | `position` | no | workspace `publicChat.buttonPosition` fallback `right` | `right` or `left` corner placement override |
+| `bottom-offset` | no | workspace `publicChat.buttonBottomOffset` fallback `20` | Distance in px from the bottom of the viewport — lifts the launcher, the bubble and the desktop panel together |
 
 ## How it works
 
@@ -40,6 +41,7 @@ import "@tacksuite/widget";
 - If the config request fails or returns `active: false`, the widget renders nothing.
 - If the workspace is active, the widget uses `publicChat.primaryColor` for the launcher button unless a `color` attribute overrides it.
 - The launcher position falls back to `publicChat.buttonPosition` when the `position` attribute is not set, and the launcher size is taken from `publicChat.buttonSize` (defaults to `56`).
+- `bottom-offset` raises the whole widget stack — the launcher, the teaser bubble and the desktop panel keep their relative spacing, and the desktop panel height shrinks so it never overflows the viewport. Useful when a cookie banner or a sticky footer sits in the bottom corner. The fullscreen mobile panel ignores it. Negative or non-numeric values fall back to the default.
 - The widget renders inside a **Shadow DOM** — its styles are fully isolated from the host page.
 - The **iframe is lazy-loaded** on first click and preserved across open/close toggles (chat state is not lost).
 - On **desktop**, clicking the button toggles a popup panel above the button.

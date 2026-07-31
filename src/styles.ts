@@ -1,12 +1,23 @@
 import { DESKTOP_PANEL_HEIGHT, MOBILE_BREAKPOINT } from "./constants";
 
-export function buildStyles(
-  color: string,
-  position: "right" | "left",
-  buttonSize: number,
-  bubbleBackground: string,
-  bubbleForeground: string,
-): string {
+export interface StyleOptions {
+  color: string;
+  position: "right" | "left";
+  buttonSize: number;
+  /** Distance in px between the bottom of the viewport and the launcher */
+  bottomOffset: number;
+  bubbleBackground: string;
+  bubbleForeground: string;
+}
+
+export function buildStyles({
+  color,
+  position,
+  buttonSize,
+  bottomOffset,
+  bubbleBackground,
+  bubbleForeground,
+}: StyleOptions): string {
   const side = position;
   const oppositeSide = position === "right" ? "left" : "right";
   const panelOrigin = position === "right" ? "bottom right" : "bottom left";
@@ -14,14 +25,17 @@ export function buildStyles(
   // The WhatsApp glyph fills its viewBox edge-to-edge, so it gets its own,
   // slightly larger proportion to sit comfortably inside the launcher.
   const whatsappIconSize = Math.round(buttonSize * 0.55);
-  const panelOffset = buttonSize + 32;
-  const bubbleOffset = buttonSize + 30;
+  // The panel and the bubble are fixed-positioned siblings of the launcher, so
+  // they carry the bottom offset themselves instead of inheriting it: each one
+  // sits its own gap above the top edge of the launcher.
+  const panelOffset = bottomOffset + buttonSize + 12;
+  const bubbleOffset = bottomOffset + buttonSize + 10;
   const tailSideOffset = Math.max(8, Math.round(buttonSize / 2 - 6));
 
   return `
     :host {
       position: fixed;
-      bottom: 20px;
+      bottom: ${bottomOffset}px;
       ${side}: 20px;
       z-index: 2147483647;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

@@ -13,6 +13,9 @@ export interface TackSuiteChatAttributes {
 
   /** Corner placement: "right" or "left" */
   position?: "right" | "left";
+
+  /** Distance in px from the bottom of the viewport (default 20) */
+  "bottom-offset"?: number | string;
 }
 
 export type WorkspaceWidgetMode = "chat" | "whatsapp";
@@ -25,6 +28,8 @@ export interface WorkspacePublicChatConfig {
   secondaryColor?: string;
   buttonPosition?: "right" | "left";
   buttonSize?: number;
+  /** Distance in px from the bottom of the viewport (default 20) */
+  buttonBottomOffset?: number;
   bubbleMessage?: string;
   /** Widget behaviour — "chat" (default) opens the chat iframe, "whatsapp" links to WhatsApp */
   mode?: WorkspaceWidgetMode;
